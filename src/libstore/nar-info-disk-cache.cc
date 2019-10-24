@@ -188,10 +188,13 @@ public:
                 (now - settings.ttlPositiveNarInfoCache));
 
             if (!queryNAR.next())
+                vomit("disk cache UNKNOWN: " + hashPart);
                 return {oUnknown, 0};
 
-            if (!queryNAR.getInt(0))
+            if (!queryNAR.getInt(0)) {
+                vomit("disk cache INVALID: " + hashPart);
                 return {oInvalid, 0};
+            }
 
             auto narInfo = make_ref<NarInfo>();
 
@@ -212,6 +215,8 @@ public:
             for (auto & sig : tokenizeString<Strings>(queryNAR.getStr(10), " "))
                 narInfo->sigs.insert(sig);
             narInfo->ca = queryNAR.getStr(11);
+
+            vomit("disk cache valid: " + hashPart);
 
             return {oValid, narInfo};
         });

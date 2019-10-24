@@ -3787,6 +3787,8 @@ void SubstitutionGoal::tryNext()
     sub = subs.front();
     subs.pop_front();
 
+    trace("next substituter: " + sub->getUri());
+
     if (sub->storeDir != worker.store.storeDir) {
         tryNext();
         return;
@@ -3795,7 +3797,8 @@ void SubstitutionGoal::tryNext()
     try {
         // FIXME: make async
         info = sub->queryPathInfo(storePath);
-    } catch (InvalidPath &) {
+    } catch (InvalidPath &e) {
+        trace("invalid path: " + std::string(e.what()));
         tryNext();
         return;
     } catch (SubstituterDisabled &) {
@@ -4479,7 +4482,7 @@ void LocalStore::ensurePath(const Path & path)
     worker.run(goals);
 
     if (goal->getExitCode() != Goal::ecSuccess)
-        throw Error(worker.exitStatus(), "path '%s' does not exist and cannot be created", path);
+        throw Error(worker.exitStatus(), "path '%s' does not exist and cannot be created (%i)", path, worker.exitStatus());
 }
 
 

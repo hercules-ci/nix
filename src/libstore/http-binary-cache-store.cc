@@ -90,8 +90,10 @@ protected:
         } catch (DownloadError & e) {
             /* S3 buckets return 403 if a file doesn't exist and the
                bucket is unlistable, so treat 403 as 404. */
-            if (e.error == Downloader::NotFound || e.error == Downloader::Forbidden)
+            if (e.error == Downloader::NotFound || e.error == Downloader::Forbidden) {
+                vomit("http-binary-cache: Not found: " + path);
                 return false;
+            }
             maybeDisable();
             throw;
         }

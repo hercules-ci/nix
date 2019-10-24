@@ -592,6 +592,7 @@ public:
        occasionally flush their path info cache. */
     void clearPathInfoCache()
     {
+        debug(format("clearing pathinfo cache on: %s (%p)") % getUri() % this);
         state.lock()->pathInfoCache.clear();
     }
 

@@ -868,8 +868,8 @@ void LocalStore::querySubstitutablePathInfos(const PathSet & paths,
         if (sub->storeDir != storeDir) continue;
         for (auto & path : paths) {
             if (infos.count(path)) continue;
-            debug(format("checking substituter '%s' for path '%s'")
-                % sub->getUri() % path);
+            debug(format("checking substituter '%s' (%p) for path '%s'")
+                % sub->getUri() % sub.operator->() % path);
             try {
                 auto info = sub->queryPathInfo(path);
                 auto narInfo = std::dynamic_pointer_cast<const NarInfo>(

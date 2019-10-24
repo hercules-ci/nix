@@ -242,6 +242,7 @@ Store::Store(const Params & params)
     : Config(params)
     , state({(size_t) pathInfoCacheSize})
 {
+  debug(format("new Store %p: %s") % this % getUri());
 }
 
 
@@ -332,12 +333,24 @@ void Store::queryPathInfo(const Path & storePath,
             auto res = state.lock()->pathInfoCache.get(hashPart);
             if (res && *res) {
                 stats.narInfoReadAverted++;
+
+                if (!*res) {
+                  debug(format("according to pathInfoCache on %s, %p, path '%s' is not valid") % getUri() % this % storePath);
+                // FIXME
+                //    throw InvalidPath(format("path '%s' is not valid (pathInfoCache on %s)") % storePath % getUri());
+                }
+                
                 return callback(ref<ValidPathInfo>(*res));
             }
         }
 
         if (diskCache) {
             auto res = diskCache->lookupNarInfo(getUri(), hashPart);
+
+            //if (res.first != NarInfoDiskCache::oUnknown) {
+            vomit("found in disk cache: " + storePath + ": " + (res.first == NarInfoDiskCache::oInvalid ? "invalid" : "valid"));
+            //}
+
             if (res.first == NarInfoDiskCache::oValid) {
                 stats.narInfoReadAverted++;
                 {
@@ -346,7 +359,7 @@ void Store::queryPathInfo(const Path & storePath,
                         res.first == NarInfoDiskCache::oInvalid ? 0 : res.second);
                     if (res.first == NarInfoDiskCache::oInvalid ||
                         (res.second->path != storePath && storePathToName(storePath) != ""))
-                        throw InvalidPath(format("path '%s' is not valid") % storePath);
+                        throw InvalidPath(format("path '%s' is not valid (diskCache on %s)") % storePath % getUri());
                 }
                 return callback(ref<ValidPathInfo>(res.second));
             }
@@ -402,7 +415,8 @@ PathSet Store::queryValidPaths(const PathSet & paths, SubstituteFlag maybeSubsti
             try {
                 auto info = fut.get();
                 state->valid.insert(path);
-            } catch (InvalidPath &) {
+            } catch (InvalidPath &e) {
+                debug("queryValidPaths: invalid path: " + std::string(e.what()));
             } catch (...) {
                 state->exc = std::current_exception();
             }
@@ -877,6 +891,7 @@ ref<Store> openStore(const std::string & uri_,
     for (auto fun : *RegisterStoreImplementation::implementations) {
         auto store = fun(uri, params);
         if (store) {
+            debug(format("openStore %s: %p") % uri % store);
             store->warnUnknownSettings();
             return ref<Store>(store);
         }
@@ -928,7 +943,7 @@ std::list<ref<Store>> getDefaultSubstituters()
 {
     static auto stores([]() {
         std::list<ref<Store>> stores;
-
+        debug("gathering default substituters");
         StringSet done;
 
         auto addStore = [&](const std::string & uri) {
@@ -941,19 +956,22 @@ std::list<ref<Store>> getDefaultSubstituters()
             }
         };
 
-        for (auto uri : settings.substituters.get())
+        for (auto uri : settings.substituters.get()) {
             addStore(uri);
+        }
 
-        for (auto uri : settings.extraSubstituters.get())
+        for (auto uri : settings.extraSubstituters.get()) {
             addStore(uri);
+        }
 
         stores.sort([](ref<Store> & a, ref<Store> & b) {
             return a->getPriority() < b->getPriority();
         });
+        debug("gathered default substituters");
 
         return stores;
     } ());
-
+    debug(format("stores stored at %p") % &stores);
     return stores;
 }
 

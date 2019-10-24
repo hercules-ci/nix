@@ -65,7 +65,7 @@ public:
     }
 };
 
-Verbosity verbosity = lvlInfo;
+Verbosity verbosity = lvlDebug;
 
 void warnOnce(bool & haveWarned, const FormatOrString & fs)
 {
