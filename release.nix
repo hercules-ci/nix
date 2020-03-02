@@ -1,7 +1,7 @@
 { nix ? builtins.fetchGit ./.
 , nixpkgs ? builtins.fetchTarball https://github.com/NixOS/nixpkgs/archive/nixos-20.03-small.tar.gz
 , officialRelease ? false
-, systems ? [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" ]
+, systems ? [ "x86_64-linux" "i686-linux" "x86_64-darwin" ]
 }:
 
 let
@@ -348,7 +348,7 @@ let
           substitute ${./scripts/install.in} $out/install \
             ${pkgs.lib.concatMapStrings
               (system: "--replace '@binaryTarball_${system}@' $(nix --experimental-features nix-command hash-file --base16 --type sha256 ${binaryTarball.${system}}/*.tar.xz) ")
-              [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" ]
+              [ "x86_64-linux" "i686-linux" "x86_64-darwin" ]
             } \
             --replace '@nixVersion@' ${build.x86_64-linux.src.version}
 
@@ -365,11 +365,9 @@ let
           build.i686-linux
           build.x86_64-darwin
           build.x86_64-linux
-          build.aarch64-linux
           binaryTarball.i686-linux
           binaryTarball.x86_64-darwin
           binaryTarball.x86_64-linux
-          binaryTarball.aarch64-linux
           tests.remoteBuilds
           tests.nix-copy-closure
           tests.binaryTarball
