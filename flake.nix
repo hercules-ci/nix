@@ -3,8 +3,11 @@
 
   inputs.nixpkgs.url = "nixpkgs/nixos-20.09-small";
   inputs.lowdown-src = { url = "github:kristapsdz/lowdown/VERSION_0_8_4"; flake = false; };
+  inputs.flake-compat.url = "github:edolstra/flake-compat";
+  inputs.flake-compat.flake = false;
+  inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
 
-  outputs = { self, nixpkgs, lowdown-src }:
+  outputs = { self, nixpkgs, lowdown-src, flake-compat-ci, ... }:
 
     let
 
@@ -175,6 +178,8 @@
       };
 
     in {
+
+      ciNix = flake-compat-ci.lib.recurseIntoFlake self;
 
       # A Nixpkgs overlay that overrides the 'nix' and
       # 'nix.perl-bindings' packages.
