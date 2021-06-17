@@ -584,6 +584,10 @@ struct CmdFlakeCheck : FlakeCommand
                                     *attr.value, *attr.pos);
                         }
 
+                        else if (name == "lib") {
+                            state->forceAttrs(vOutput, pos);
+                        }
+
                         else
                             warn("unknown flake output '%s'", name);
 
