@@ -588,6 +588,10 @@ struct CmdFlakeCheck : FlakeCommand
                             state->forceAttrs(vOutput, pos);
                         }
 
+                        else if (name == "hercules-ci") {
+                            state->forceAttrs(vOutput, pos);
+                        }
+
                         else
                             warn("unknown flake output '%s'", name);
 

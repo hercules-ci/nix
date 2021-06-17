@@ -68,6 +68,7 @@ The following flake output attributes must be *attribute sets*,
 but further validation is your own responsibility:
 
 * `lib`
+* `hercules-ci`
 
 In addition, the `hydraJobs` output is evaluated in the same way as
 Hydra's `hydra-eval-jobs` (i.e. as a arbitrarily deeply nested
