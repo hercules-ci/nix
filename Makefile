@@ -6,6 +6,7 @@ makefiles = \
   src/libstore/local.mk \
   src/libstore/tests/local.mk \
   src/libfetchers/local.mk \
+  src/libfetchers/tests/local.mk \
   src/libmain/local.mk \
   src/libexpr/local.mk \
   src/libexpr/tests/local.mk \
