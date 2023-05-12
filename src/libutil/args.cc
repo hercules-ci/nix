@@ -259,6 +259,7 @@ void Args::parseCmdline(const Strings & _cmdline, bool allowShebang)
                     cmdline.push_back(word);
                 }
                 cmdline.push_back(script);
+                commandBaseDir = dirOf(script);
                 for (auto pos = savedArgs.begin(); pos != savedArgs.end();pos++)
                     cmdline.push_back(*pos);
             }
@@ -313,6 +314,14 @@ void Args::parseCmdline(const Strings & _cmdline, bool allowShebang)
     for (auto & f : flagExperimentalFeatures)
         experimentalFeatureSettings.require(f);
 
+}
+
+Path Args::getCommandBaseDir() const
+{
+    if (parent)
+        return parent->getCommandBaseDir();
+    else
+        return commandBaseDir;
 }
 
 bool Args::processFlag(Strings::iterator & pos, Strings::iterator end)
