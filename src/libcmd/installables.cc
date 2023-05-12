@@ -93,7 +93,7 @@ MixFlakeOptions::MixFlakeOptions()
             lockFlags.writeLockFile = false;
             lockFlags.inputOverrides.insert_or_assign(
                 flake::parseInputPath(inputPath),
-                parseFlakeRef(flakeRef, absPath("."), true));
+                parseFlakeRef(flakeRef, absPath(getCommandBaseDir()), true));
         }},
         .completer = {[&](size_t n, std::string_view prefix) {
             if (n == 0)
@@ -134,7 +134,7 @@ MixFlakeOptions::MixFlakeOptions()
             auto evalState = getEvalState();
             auto flake = flake::lockFlake(
                 *evalState,
-                parseFlakeRef(flakeRef, absPath(".")),
+                parseFlakeRef(flakeRef, absPath(getCommandBaseDir())),
                 { .writeLockFile = false });
             for (auto & [inputName, input] : flake.lockFile.root->inputs) {
                 auto input2 = flake.lockFile.findInput({inputName}); // resolve 'follows' nodes
@@ -156,7 +156,7 @@ void MixFlakeOptions::completeFlakeInput(std::string_view prefix)
 {
     auto evalState = getEvalState();
     for (auto & flakeRefS : getFlakesForCompletion()) {
-        auto flakeRef = parseFlakeRefWithFragment(expandTilde(flakeRefS), absPath(".")).first;
+        auto flakeRef = parseFlakeRefWithFragment(expandTilde(flakeRefS), absPath(getCommandBaseDir())).first;
         auto flake = flake::getFlake(*evalState, flakeRef, true);
         for (auto & input : flake.inputs)
             if (hasPrefix(input.first, prefix))
@@ -487,7 +487,7 @@ Installables SourceExprCommand::parseInstallables(
             }
 
             try {
-                auto [flakeRef, fragment] = parseFlakeRefWithFragment(std::string { prefix }, absPath("."));
+                auto [flakeRef, fragment] = parseFlakeRefWithFragment(std::string { prefix }, absPath(getCommandBaseDir()));
                 result.push_back(make_ref<InstallableFlake>(
                         this,
                         getEvalState(),
