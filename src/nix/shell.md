@@ -59,17 +59,17 @@ done by starting the script with the following lines:
 
 ```bash
 #! /usr/bin/env nix
-#! nix shell installables --command real-interpreter
+#! nix shell <installables> --command <interpreter>
 ```
 
-where *real-interpreter* is the “real” script interpreter that will be
+where <interpreter> is the interpreter that will be
 invoked by `nix shell` after it has obtained the dependencies and
 initialised the environment, and *installables* are the attribute names of
 the dependencies in Nixpkgs.
 
-The lines starting with `#! nix` specify options (see above). Note that you
-cannot write `#! /usr/bin/env nix shell -i ...` because many operating systems
-only allow one argument in `#!` lines.
+The lines starting with `#! nix` are concatenated into a single call. Note that
+you cannot write `#! /usr/bin/env nix shell -i ...` because many operating
+systems only allow one argument in `#!` lines.
 
 For example, here is a Python script that depends on Python and the
 `prettytable` package:
@@ -120,8 +120,9 @@ terraform "$@"
 
 > **Note**
 >
-> You must use double backticks (```` `` ````) when passing a simple Nix expression
-> in a nix shell shebang.
+> You can use double backticks (```` `` ````) when passing what would usually
+> be a double-quoted string in order to support multi-line strings
+> in a nix shebang.
 
 Finally, using the merging of multiple nix shell shebangs the following
 Haskell script uses a specific branch of Nixpkgs/NixOS (the 21.11 stable

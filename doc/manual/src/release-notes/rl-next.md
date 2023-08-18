@@ -23,8 +23,8 @@
 - Introduce a new [`outputOf`](@docroot@/language/builtins.md#builtins-outputOf) builtin.
   It is part of the [`dynamic-derivations`](@docroot@/contributing/experimental-features.md#xp-feature-dynamic-derivations) experimental feature.
 
-- The experimental nix command is now a `#!-interpreter` by appending the
-  contents of any `#! nix` lines and the script's location to a single call.
+- The experimental `nix` command is now a `#!-interpreter` by concatenating the
+  contents of any `#! nix` lines and the script's location into a single call.
 
   Verbatim strings may be passed in double backtick (```` `` ````) quotes.
   `--file` and `--expr` resolve relative paths based on the script location.
@@ -32,7 +32,7 @@
   Some examples:
   ```
   #!/usr/bin/env nix
-  #! nix shell --file ``<nixpkgs>`` hello --command bash
+  #! nix shell --file ``<nixpkgs>`` hello cowsay --command bash
 
   hello | cowsay
   ```
