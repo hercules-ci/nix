@@ -118,7 +118,7 @@ static void prim_addDrvOutputDependencies(EvalState & state, const PosIdx pos, V
             },
             [&](const NixStringContextElem::Built & c) -> NixStringContextElem::DrvDeep {
                 throw EvalError({
-                    .msg = hintfmt("`addDrvOutputDependencies` can only act on derivations, not derivation outputs"),
+                    .msg = hintfmt("`addDrvOutputDependencies` can only act on derivations, not on a derivation output such as '%1%'", c.output),
                     .errPos = state.positions[pos],
                 });
             },

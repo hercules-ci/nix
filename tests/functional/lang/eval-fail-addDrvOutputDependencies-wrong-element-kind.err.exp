@@ -8,4 +8,4 @@ error:
              |    ^
            10|
 
-       error: `addDrvOutputDependencies` can only act on derivations, not derivation outputs
+       error: `addDrvOutputDependencies` can only act on derivations, not on a derivation output such as 'out'
