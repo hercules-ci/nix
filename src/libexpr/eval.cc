@@ -21,6 +21,7 @@
 #include <iostream>
 #include <cstring>
 #include <optional>
+#include <sstream>
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -41,6 +42,7 @@
 #include <boost/coroutine2/coroutine.hpp>
 #include <boost/coroutine2/protected_fixedsize_stack.hpp>
 #include <boost/context/stack_context.hpp>
+#include <boost/container/small_vector.hpp>
 
 #endif
 
@@ -460,6 +462,34 @@ ErrorBuilder & ErrorBuilder::withFrame(const Env & env, const Expr & expr)
         .isError = true
     });
     return *this;
+}
+
+// TODO: move just before maybeThunk impls
+class StringWriter {
+    size_t length;
+    boost::container::small_vector<Value::StringWithContext, 64> strings;
+
+public:
+    const std::string_view errorContext;
+
+    void append(Value::StringWithContext & s, size_t sLength) {
+        length += sLength;
+        strings.push_back(s);
+    }
+
+    void append(Value::StringWithContext & s) {
+        size_t sLength = strlen(s.c_str);
+        append(s, sLength);
+    }
+};
+
+/* Default implementation, switching back to normal evaluation. */
+void Expr::evalToStringBuffer(EvalState & state, Env & env, Value & v, StringWriter & writer)
+{
+    if (v.isThunk()) {
+        state.forceString(v, getPos(), writer.errorContext);
+    }
+    writer.append(v.string);
 }
 
 

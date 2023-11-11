@@ -132,6 +132,7 @@ struct Env;
 struct Value;
 class EvalState;
 struct StaticEnv;
+class StringWriter;
 
 
 /**
@@ -161,10 +162,29 @@ struct Expr
     virtual ~Expr() { };
     virtual void show(const SymbolTable & symbols, std::ostream & str) const;
     virtual void bindVars(EvalState & es, const std::shared_ptr<const StaticEnv> & env);
-    virtual void eval(EvalState & state, Env & env, Value & v);
-    virtual Value * maybeThunk(EvalState & state, Env & env);
     virtual void setName(Symbol name);
     virtual PosIdx getPos() const { return noPos; }
+
+    // Evaluation methods
+
+    /**
+     * Evaluate in place.
+     */
+    virtual void eval(EvalState & state, Env & env, Value & v);
+
+    /**
+     * Evaluate by returning a value pointer.
+     */
+    virtual Value * maybeThunk(EvalState & state, Env & env);
+
+    /**
+     * Evaluate by writing to a string buffer.
+     *
+     * This method optimizes the evaluation of expressions that are long
+     * concatenations or interpolations, as long as their components aren't in
+     * let bindings.
+     */
+    virtual void evalToStringBuffer(EvalState & state, Env & env, Value &v, StringWriter & str);
 };
 
 #define COMMON_METHODS \
@@ -194,6 +214,7 @@ struct ExprString : Expr
     Value v;
     ExprString(std::string &&s) : s(std::move(s)) { v.mkString(this->s.data()); };
     Value * maybeThunk(EvalState & state, Env & env) override;
+    void evalToStringBuffer(EvalState & state, Env & env, Value &v, StringWriter & str) override;
     COMMON_METHODS
 };
 
@@ -207,6 +228,7 @@ struct ExprPath : Expr
         v.mkPath(&*accessor, this->s.c_str());
     }
     Value * maybeThunk(EvalState & state, Env & env) override;
+    void evalToStringBuffer(EvalState & state, Env & env, Value &v, StringWriter & str) override;
     COMMON_METHODS
 };
 
@@ -443,6 +465,7 @@ struct ExprConcatStrings : Expr
     ExprConcatStrings(const PosIdx & pos, bool forceString, std::vector<std::pair<PosIdx, Expr *>> * es)
         : pos(pos), forceString(forceString), es(es) { };
     PosIdx getPos() const override { return pos; }
+    void evalToStringBuffer(EvalState & state, Env & env, Value &v, StringWriter & str) override;
     COMMON_METHODS
 };
 
