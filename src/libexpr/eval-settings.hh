@@ -73,6 +73,8 @@ struct EvalSettings : Config
           - the URI is equal to the prefix,
           - or the URI is a subpath of the prefix,
           - or the prefix is a URI scheme ended by a colon `:` and the URI has the same scheme.
+
+          URI schemes must be entered in lower case.
         )"};
 
     Setting<bool> traceFunctionCalls{this, false, "trace-function-calls",
