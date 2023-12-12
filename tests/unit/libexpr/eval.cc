@@ -11,6 +11,7 @@ TEST(nix_isAllowedURI, http_example_com) {
     allowed.push_back("http://example.com");
 
     ASSERT_TRUE(isAllowedURI("http://example.com", allowed));
+    ASSERT_TRUE(isAllowedURI("HTTP://example.com", allowed));
     ASSERT_TRUE(isAllowedURI("http://example.com/foo", allowed));
     ASSERT_TRUE(isAllowedURI("http://example.com/foo/", allowed));
     ASSERT_FALSE(isAllowedURI("/", allowed));

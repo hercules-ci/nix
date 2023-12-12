@@ -32,6 +32,7 @@ test_tarball() {
 
     nix-build  -o $TEST_ROOT/result -E "import (fetchTree file://$tarball)"
     nix-build  -o $TEST_ROOT/result -E "import (fetchTree { type = \"tarball\"; url = file://$tarball; })"
+    nix-build  -o $TEST_ROOT/result -E "import (fetchTree { type = \"tarball\"; url = FILe://$tarball; })"
     nix-build  -o $TEST_ROOT/result -E "import (fetchTree { type = \"tarball\"; url = file://$tarball; narHash = \"$hash\"; })"
     # Do not re-fetch paths already present
     nix-build  -o $TEST_ROOT/result -E "import (fetchTree { type = \"tarball\"; url = file:///does-not-exist/must-remain-unused/$tarball; narHash = \"$hash\"; })"

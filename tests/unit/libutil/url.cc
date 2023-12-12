@@ -349,6 +349,9 @@ TEST(nix, isValidSchemeName) {
     ASSERT_TRUE(isValidSchemeName("https"));
     ASSERT_TRUE(isValidSchemeName("file"));
     ASSERT_TRUE(isValidSchemeName("file+https"));
+    ASSERT_TRUE(isValidSchemeName("File"));
+    ASSERT_TRUE(isValidSchemeName("fILE"));
+    ASSERT_TRUE(isValidSchemeName("FILE"));
     ASSERT_TRUE(isValidSchemeName("fi.le"));
     ASSERT_TRUE(isValidSchemeName("file-ssh"));
     ASSERT_TRUE(isValidSchemeName("file+"));

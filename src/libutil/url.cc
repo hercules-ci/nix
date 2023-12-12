@@ -23,7 +23,7 @@ ParsedURL parseURL(const std::string & url)
 
     if (std::regex_match(url, match, uriRegex)) {
         auto & base = match[1];
-        std::string scheme = match[2];
+        std::string scheme = toLower(match[2]);
         auto authority = match[3].matched
             ? std::optional<std::string>(match[3]) : std::nullopt;
         std::string path = match[4].matched ? match[4] : match[5];
