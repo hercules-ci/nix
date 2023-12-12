@@ -6,8 +6,8 @@
 
 namespace nix {
 
-// URI stuff.
 const static std::string pctEncoded = "(?:%[0-9a-fA-F][0-9a-fA-F])";
+/** See https://www.rfc-editor.org/rfc/rfc3986#section-3.1. Remember to convert to lower case. */
 const static std::string schemeNameRegex = "(?:[A-Za-z][A-Za-z0-9+.-]*)";
 const static std::string ipv6AddressSegmentRegex = "[0-9a-fA-F:]+(?:%\\w+)?";
 const static std::string ipv6AddressRegex = "(?:\\[" + ipv6AddressSegmentRegex + "\\]|" + ipv6AddressSegmentRegex + ")";
